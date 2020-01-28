@@ -40,19 +40,33 @@ class App:
 
     @logger.default
     def _create_logger(self):
+        """
+        Default initialiser that creates a stdlib logger.
+        """
         logger = logging.getLogger(self.name)
         return logger
 
     def __attrs_post_init__(self):
+        """
+        Post-init hook. Used to load the middlware from the config. This requires the
+        config to already have been initialised before creating the App.
+        """
         self.load_middleware()
 
     @property
     def globals(self):
+        """
+        Provides a proxied dict in the ``local_context``.
+        """
         if not hasattr(self.local_context, "globals"):
             self.local_context.globals = DictProxy()
         return self.local_context.globals
 
     def route(self, **options: Mapping[str, Any]) -> Callable:
+        """
+        Provides a decorator for adding a route via the configured router.
+        """
+
         def decorator(fn: Callable):
             self.router.add_route(fn=fn, **options)
             return fn
@@ -60,6 +74,9 @@ class App:
         return decorator
 
     def register_exception_handler(self, fn: Callable) -> Callable:
+        """
+        Provides a decorator that registers a handler for any uncaught exceptions.
+        """
         self.exception_handlers.append(fn)
 
         def decorator(fn: Callable):
@@ -68,6 +85,9 @@ class App:
         return decorator
 
     def load_middleware(self):
+        """
+        Initialises the middlware from the app config.
+        """
         dispatch = self.router.dispatch
         configured_middleware = self.config.get("MIDDLEWARE", [])
         for middleware in configured_middleware:
@@ -76,12 +96,26 @@ class App:
         self.middleware_chain = dispatch
 
     def dispatch(self, *, event: Event) -> Any:
+        """
+        Dispatches a request via the configured middleware chain.
+
+        :param event: The ``Event`` object pass on to the middleware chain.
+        """
         return self.middleware_chain(event=event)
 
     def _create_event(self, raw_event: Mapping[str, Any]) -> Event:
+        """
+        Helper to create an event from the configured ``event_class``.
+        """
         return self.event_class(raw=raw_event)
 
     def __call__(self, raw_event: Mapping[str, Any], lambda_context: Any) -> Any:
+        """
+        The main entry point that is invoked by the lambda runtime environment.
+
+        :param raw_event: The raw event mapping passed in from the lambda runtime.
+        :param lambda_context: The execution contect object passed in from the lambda runtime.
+        """
         event = self._create_event(raw_event)
         self.execution_context = lambda_context
         try:
