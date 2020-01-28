@@ -33,6 +33,7 @@ setup(
     license="BSD 3 Clause",
     description="AWS Lambda Routing Utility",
     long_description=read("README.md"),
+    long_description_content_type="text/markdown",
     author="Jason Paidoussi",
     author_email="jason@paidoussi.net",
     packages=find_packages(where="src"),
