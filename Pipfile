@@ -13,6 +13,7 @@ pre-commit = "*"
 mypy = "*"
 sphinx = "*"
 isort = "*"
+twine = "*"
 
 [packages]
 lambda-router = {editable = true,path = "."}

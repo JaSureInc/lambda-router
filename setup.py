@@ -29,9 +29,9 @@ version = get_version("lambda_router")
 setup(
     name="lambda_router",
     version=version,
-    url="https://",
+    url="https://github.com/jasureinc/lambda-router",
     license="BSD 3 Clause",
-    description="AWS Lambda Router",
+    description="AWS Lambda Routing Utility",
     long_description=read("README.md"),
     author="Jason Paidoussi",
     author_email="jason@paidoussi.net",
@@ -40,5 +40,13 @@ setup(
     include_package_data=True,
     install_requires=INSTALL_REQUIRES,
     extras_require=EXTRAS_REQUIRE,
-    classifiers=["Development Status :: 3 - Alpha", "Programming Language :: Python"],
+    classifiers=[
+        "Development Status :: 3 - Alpha",
+        "Programming Language :: Python"
+        "Programming Language :: Python :: 3"
+        "Programming Language :: Python :: 3.7"
+        "Programming Language :: Python :: 3.8",
+        "License :: OSI Approved :: BSD License",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+    ],
 )
