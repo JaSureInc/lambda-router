@@ -71,6 +71,7 @@ class TestApp:
         @app.register_exception_handler
         def handle_exceptions(app, event, e):
             handled = True
+            print(f"handled: {handled}")
 
         print(app.exception_handlers)
         assert app.exception_handlers
