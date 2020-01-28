@@ -42,9 +42,9 @@ setup(
     extras_require=EXTRAS_REQUIRE,
     classifiers=[
         "Development Status :: 3 - Alpha",
-        "Programming Language :: Python"
-        "Programming Language :: Python :: 3"
-        "Programming Language :: Python :: 3.7"
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "License :: OSI Approved :: BSD License",
         "Topic :: Software Development :: Libraries :: Python Modules",
