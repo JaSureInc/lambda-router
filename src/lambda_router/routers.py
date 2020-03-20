@@ -120,10 +120,11 @@ class SQSMessage:
             meta.update(attributes)
         body = body = raw_message.pop("body", "")
         message_attribites = raw_message.pop("messageAttributes", None)
+        key = None
         if message_attribites:
-            key = message_attribites.get("key", None)
-        else:
-            key = None
+            key_attribute = message_attribites.get("key", None)
+            if key_attribute is not None:
+                key = key_attribute["stringValue"]
         for key, value in raw_message.items():
             meta[key] = value
 
