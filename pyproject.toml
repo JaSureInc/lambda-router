@@ -1,0 +1,47 @@
+[tool.poetry]
+name = "lambda-router"
+version = "2020.03.25"
+description = "Routing utilities for AWS Lambda functions."
+authors = ["Jason Paidoussi <jason@paidoussi.net>"]
+license = "BSD-3-Clause"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^3.7.9"
+pytest = "^5.4.1"
+black = "^19.10b0"
+coverage = "^5.0.4"
+pre-commit = "^2.2.0"
+
+[tool.coverage.run]
+parallel = true
+branch = true
+source = ["lambda_router"]
+
+[tool.coverage.paths]
+source = ["src", ".tox/*/site-packages"]
+
+[tool.coverage.report]
+show_missing = true
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+atomic = true
+force_grid_wrap = 0
+include_trailing_comma = true
+lines_after_imports = 2
+lines_between_types = 1
+multi_line_output = 3
+not_skip = "__init__.py"
+skip = ["LICENSE","setup.cfg",".gitignore"]
+use_parentheses = true
+
+known_first_party = "lambda_router"
+known_third_party = ["attr","pytest","setuptools"]
+[build-system]
+requires = ["setuptools>=40.6.0", "wheel"]
+build-backend = "setuptools.build_meta"

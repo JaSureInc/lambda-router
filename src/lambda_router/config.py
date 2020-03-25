@@ -31,9 +31,7 @@ def _get_field_value(value: Any, *, params: Mapping[str, Any]) -> Any:
     return value
 
 
-def _filter_with_template(
-    unfiltered: Mapping[str, Any], *, template: Mapping[str, Any],
-) -> Dict[str, Any]:
+def _filter_with_template(unfiltered: Mapping[str, Any], *, template: Mapping[str, Any],) -> Dict[str, Any]:
     """
     Applies a given config template to a given mapping.
 
@@ -47,9 +45,7 @@ def _filter_with_template(
             try:
                 filtered[field] = _get_field_value(unfiltered[field], params=params)
             except KeyError:
-                raise exceptions.ConfigError(
-                    f"Required config parameters ({field}) is missing"
-                )
+                raise exceptions.ConfigError(f"Required config parameters ({field}) is missing")
         else:
             # Use the optional value from the unfiltered dict, otherwise fallback
             # to the default from the template.
@@ -69,11 +65,7 @@ class Config(dict):
     """
 
     def load_from_dict(
-        self,
-        unfiltered: Mapping[str, Any],
-        *,
-        prefix: str = None,
-        template: Mapping[str, Any] = None,
+        self, unfiltered: Mapping[str, Any], *, prefix: str = None, template: Mapping[str, Any] = None,
     ) -> None:
         """
         Updates the config from an existing mapping, optionaly applying
@@ -91,18 +83,12 @@ class Config(dict):
         else:
             if prefix is not None:
                 prefix_length = len(prefix)
-                filtered = {
-                    key[prefix_length:]: value
-                    for key, value in unfiltered.items()
-                    if key.startswith(prefix)
-                }
+                filtered = {key[prefix_length:]: value for key, value in unfiltered.items() if key.startswith(prefix)}
             else:
                 filtered = unfiltered
         self.update(filtered)
 
-    def load_from_environment(
-        self, *, prefix: str = None, template: Mapping[str, Any] = None
-    ) -> None:
+    def load_from_environment(self, *, prefix: str = None, template: Mapping[str, Any] = None) -> None:
         """
         Updates the config from the current running environment, optionaly applying
         a configuration template or filtering out fields with that don't

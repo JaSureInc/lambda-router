@@ -7,7 +7,7 @@ from setuptools import find_packages, setup
 
 INSTALL_REQUIRES = ["attrs>=19.1.0"]
 
-EXTRAS_REQUIRE = {"docs": ["sphinx"], "tests": ["coverage", "pytest"]}
+EXTRAS_REQUIRE = {"docs": ["sphinx"], "tests": ["coverage[toml]", "pytest"]}
 
 
 HERE = os.path.abspath(os.path.dirname(__file__))

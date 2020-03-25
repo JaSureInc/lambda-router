@@ -78,15 +78,11 @@ class TestConfig:
 
 
 class TestStrToBool:
-    @pytest.mark.parametrize(
-        "true_str", ["true", "t", "1", "yes", "y", "TRUE", "True", "T"]
-    )
+    @pytest.mark.parametrize("true_str", ["true", "t", "1", "yes", "y", "TRUE", "True", "T"])
     def test_str_to_bool_with_true_strings(self, true_str):
         assert config.str_to_bool(true_str)
 
-    @pytest.mark.parametrize(
-        "false_str", ["false", "FALSE", "0", "hello", "this is false"]
-    )
+    @pytest.mark.parametrize("false_str", ["false", "FALSE", "0", "hello", "this is false"])
     def test_str_to_bool_with_false_strings(self, false_str):
         assert not config.str_to_bool(false_str)
 

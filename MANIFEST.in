@@ -1,0 +1,8 @@
+include LICENCE
+include *.md *.toml *.yaml *.txt *.ini *.rst
+graft .github
+graft tests
+recursive-exclude tests *.pyc
+
+graft docs
+prune docs/_build

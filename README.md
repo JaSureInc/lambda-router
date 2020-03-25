@@ -53,14 +53,14 @@ Or a multi-route app that uses the `type` field in the lambda event for routing:
 
 ## Contributing
 
-Use `pipenv` to install the dev requirements:
+Use `poetry` to install the dev requirements:
 
 ```console
-    $ pipenv install --dev
+    $ poetry install
 ```
 
 Install the git pre-commit hooks:
 
 ```console
-    $ pipenv run pre-commit install
+    $ poetry run pre-commit install
 ```
