@@ -26,9 +26,7 @@ class SingleRoute(Router):
         :raises ValueError: Raised when a single route has already been defined.
         """
         if self.route is not None:
-            raise ValueError(
-                "Single route is already defined. SingleRoute can only have a single defined route."
-            )
+            raise ValueError("Single route is already defined. SingleRoute can only have a single defined route.")
 
         self.route = fn
 
@@ -113,9 +111,7 @@ class SQSMessage:
     event: Event = attr.ib()
 
     @classmethod
-    def from_raw_sqs_message(
-        cls, *, raw_message: Dict[str, Any], key_name: str, event: Event
-    ):
+    def from_raw_sqs_message(cls, *, raw_message: Dict[str, Any], key_name: str, event: Event):
         meta = {}
         attributes = raw_message.pop("attributes", None)
         if attributes:
@@ -149,9 +145,7 @@ class SQSMessageField(Router):
     routes: Dict[str, Callable] = attr.ib(init=False, factory=dict)
 
     def _get_message(self, raw_message: Dict[str, Any], event: Event) -> SQSMessage:
-        return SQSMessage.from_raw_sqs_message(
-            raw_message=raw_message, key_name=self.key, event=event
-        )
+        return SQSMessage.from_raw_sqs_message(raw_message=raw_message, key_name=self.key, event=event)
 
     def add_route(self, *, fn: Callable, key: str) -> None:
         """

@@ -154,9 +154,7 @@ def sqs_event():
 class TestSQSMessage:
     def test_from_raw_sqs_message(self, sqs_event):
         raw_message = sqs_event.raw["Records"][0]
-        message = routers.SQSMessage.from_raw_sqs_message(
-            raw_message=raw_message, key_name="key", event=sqs_event
-        )
+        message = routers.SQSMessage.from_raw_sqs_message(raw_message=raw_message, key_name="key", event=sqs_event)
         assert "global.person_updated" == message.key
         assert "a11e7a78-fb68-4c06-ae19-d391158f31ed" == message.meta["messageId"]
 

@@ -30,13 +30,9 @@ class App:
     event_class: Event = attr.ib(default=LambdaEvent)
     router: Router = attr.ib(factory=routers.SingleRoute)
     logger: logging.Logger = attr.ib(repr=False)
-    local_context: threading.local = attr.ib(
-        repr=False, init=False, factory=threading.local
-    )
+    local_context: threading.local = attr.ib(repr=False, init=False, factory=threading.local)
     execution_context: Optional[Any] = attr.ib(repr=False, init=False, default=None)
-    middleware_chain: Optional[List[Callable]] = attr.ib(
-        repr=False, init=False, default=None
-    )
+    middleware_chain: Optional[List[Callable]] = attr.ib(repr=False, init=False, default=None)
     exception_handlers: List[Callable] = attr.ib(repr=False, init=False, factory=list)
 
     @logger.default
