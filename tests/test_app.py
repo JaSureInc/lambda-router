@@ -1,6 +1,6 @@
 import pytest  # noqa: F401
 
-from lambda_router.app import App, Config
+from lambda_router.app import App, Config, routers
 
 
 class TestApp:
@@ -73,7 +73,6 @@ class TestApp:
             handled = True
             print(f"handled: {handled}")
 
-        print(app.exception_handlers)
         assert app.exception_handlers
 
         @app.route()
@@ -83,3 +82,22 @@ class TestApp:
         with pytest.raises(ValueError):
             app({}, {})
             assert handled
+
+    def test_event_field(self):
+        app = App(name="test_default_config", router=routers.EventField(key="field"))
+
+        @app.route(key="main")
+        def main_route(event):
+            return {"result": "success"}
+
+        @app.route(key="alt")
+        def alt_route(event):
+            return {"result": "failure"}
+
+        event = {"field": "main"}
+        context = {}
+        result = app(event, context)
+        assert {"result": "success"} == result
+        event = {"field": "alt"}
+        result = app(event, context)
+        assert {"result": "failure"} == result
