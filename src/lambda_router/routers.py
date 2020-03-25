@@ -113,7 +113,9 @@ class SQSMessage:
     event: Event = attr.ib()
 
     @classmethod
-    def from_raw_sqs_message(cls, *, raw_message, event):
+    def from_raw_sqs_message(
+        cls, *, raw_message: Dict[str, Any], key_name: str, event: Event
+    ):
         meta = {}
         attributes = raw_message.pop("attributes", None)
         if attributes:
@@ -122,11 +124,11 @@ class SQSMessage:
         message_attribites = raw_message.pop("messageAttributes", None)
         key = None
         if message_attribites:
-            key_attribute = message_attribites.get("key", None)
+            key_attribute = message_attribites.get(key_name, None)
             if key_attribute is not None:
                 key = key_attribute["stringValue"]
-        for key, value in raw_message.items():
-            meta[key] = value
+        for k, value in raw_message.items():
+            meta[k] = value
 
         # Attempt to decode json body.
         body = json.loads(body)
@@ -145,6 +147,11 @@ class SQSMessageField(Router):
 
     key: str = attr.ib(kw_only=True)
     routes: Dict[str, Callable] = attr.ib(init=False, factory=dict)
+
+    def _get_message(self, raw_message: Dict[str, Any], event: Event) -> SQSMessage:
+        return SQSMessage.from_raw_sqs_message(
+            raw_message=raw_message, key_name=self.key, event=event
+        )
 
     def add_route(self, *, fn: Callable, key: str) -> None:
         """
@@ -185,9 +192,7 @@ class SQSMessageField(Router):
             raise ValueError("No messages present in Event.")
 
         for raw_message in messages:
-            message = SQSMessage.from_raw_sqs_message(
-                raw_message=raw_message, event=event
-            )
+            message = self._get_message(raw_message, event=event)
             route = self.get_route(message=message)
             # Process each message now.
             route(message=message)
