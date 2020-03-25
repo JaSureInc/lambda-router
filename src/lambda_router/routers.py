@@ -138,10 +138,10 @@ class SQSMessage:
 @attr.s(kw_only=True)
 class SQSMessageField(Router):
     """
-    Routes on a the value of the specified field in the
-    given ``Event.raw`` dict.
+    Processes all message records in a given ``Event``, routing each based on
+    on the configured key.
 
-    :param key: The name of the top-level key to look for when routing.
+    :param key: The name of the message-level key to look for when routing.
     :param routes: The routes mapping. Only set via ``add_route``
     """
 
@@ -183,9 +183,10 @@ class SQSMessageField(Router):
 
     def dispatch(self, *, event: Event) -> Any:
         """
-        Gets the configured route and invokes the callable.
+        Iterates over all the message records in the given Event and executes the
+        applicable callable as determined by the configured routes.
 
-        :param event: The event to pass to the callable route.
+        :param event: The event to parse for messages.
         """
         messages = event.raw.get("Records", None)
         if messages is None:
