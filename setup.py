@@ -5,7 +5,7 @@ import re
 from setuptools import find_packages, setup
 
 
-INSTALL_REQUIRES = ["attrs>=19.1.0"]
+INSTALL_REQUIRES = ["attrs>=19.1.0", "jsonpath-rw>=1.4.0"]
 
 EXTRAS_REQUIRE = {"docs": ["sphinx"], "tests": ["coverage[toml]", "pytest"]}
 

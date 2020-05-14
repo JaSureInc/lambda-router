@@ -8,6 +8,10 @@ class Event(abc.ABC):
     Abstract interface for Events.
     """
 
+    @abc.abstractclassmethod
+    def create(cls, *, raw, app):
+        raise NotImplementedError("This classmethod must be implemented by a subclass.")
+
 
 class Router(abc.ABC):
     """

@@ -70,7 +70,7 @@ class TestEventField:
     def test_get_route(self):
         router = routers.EventField(key="field")
         router.add_route(fn=lambda event: "ok", key="test")
-        event = events.LambdaEvent(raw={"field": "test"})
+        event = events.LambdaEvent(raw={"field": "test"}, app=None)
         route = router.get_route(event=event)
         assert route is not None
         assert callable(route)
@@ -78,7 +78,7 @@ class TestEventField:
     def test_get_route_with_invalid_key(self):
         router = routers.EventField(key="field")
         router.add_route(fn=lambda event: "ok", key="test")
-        event = events.LambdaEvent(raw={"field": "new"})
+        event = events.LambdaEvent(raw={"field": "new"}, app=None)
         with pytest.raises(ValueError) as e:
             router.get_route(event=event)
             assert "No route configured for given field (field)." in str(e.value)
@@ -86,7 +86,7 @@ class TestEventField:
     def test_get_route_with_missing_key(self):
         router = routers.EventField(key="route_on")
         router.add_route(fn=lambda event: "ok", key="test")
-        event = events.LambdaEvent(raw={"field": "new"})
+        event = events.LambdaEvent(raw={"field": "new"}, app=None)
         with pytest.raises(ValueError) as e:
             router.get_route(event=event)
             assert "Routing key (route_on) is not present in the event." in str(e.value)
@@ -102,15 +102,15 @@ class TestEventField:
 
         router.add_route(fn=test_route_one, key="one")
         router.add_route(fn=test_route_two, key="two")
-        response = router.dispatch(event=events.LambdaEvent(raw={"field": "one"}))
+        response = router.dispatch(event=events.LambdaEvent(raw={"field": "one"}, app=None))
         assert {"message": "ok"} == response
-        response = router.dispatch(event=events.LambdaEvent(raw={"field": "two"}))
+        response = router.dispatch(event=events.LambdaEvent(raw={"field": "two"}, app=None))
         assert {"message": "error"} == response
 
     def test_dispatch_without_route(self):
         router = routers.EventField(key="field")
         with pytest.raises(ValueError) as e:
-            router.dispatch(event=events.LambdaEvent(raw={}))
+            router.dispatch(event=events.LambdaEvent(raw={}, app=None))
             assert "No route configured" in str(e.value)
 
 
@@ -147,7 +147,8 @@ def sqs_event():
                     "awsRegion": "eu-west-1",
                 }
             ]
-        }
+        },
+        app=None,
     )
 
 
