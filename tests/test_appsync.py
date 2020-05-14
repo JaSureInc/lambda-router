@@ -1,3 +1,5 @@
+import copy
+
 import pytest  # noqa: F401
 
 from lambda_router import appsync
@@ -74,3 +76,64 @@ class TestAppSyncEvent:
         assert "getAssets" == event.info.field_name
         assert "content-length" in event.request.headers
         assert {} == event.arguments
+
+
+class TestAppSyncField:
+    def test_add_route(self):
+        router = appsync.AppSyncField()
+
+        def test_route_one(event):
+            return {"message": "ok"}
+
+        def test_route_two(event):
+            return {"message": "ok"}
+
+        router.add_route(fn=test_route_one, field="one")
+        router.add_route(fn=test_route_two, field="two")
+        assert router.routes
+        assert 2 == len(router.routes)
+        assert "one" in router.routes
+        assert "two" in router.routes
+
+    def test_get_route(self, example_request):
+        router = appsync.AppSyncField()
+        router.add_route(fn=lambda event: "ok", field="getAssets")
+        event = appsync.AppSyncEvent.create(raw=example_request, app={}, template={"context": "details"})
+        route = router.get_route(event=event)
+        assert route is not None
+        assert callable(route)
+
+    def test_get_route_with_invalid_field(self, example_request):
+        router = appsync.AppSyncField()
+        router.add_route(fn=lambda event: "ok", field="getPeople")
+        event = appsync.AppSyncEvent.create(raw=example_request, app={}, template={"context": "details"})
+        with pytest.raises(ValueError) as e:
+            router.get_route(event=event)
+            assert "No route configured for given field (field)." in str(e.value)
+
+    def test_dispatch(self, example_request):
+        router = appsync.AppSyncField()
+
+        def test_route_one(event):
+            return {"message": "ok"}
+
+        def test_route_two(event):
+            return {"message": "error"}
+
+        router.add_route(fn=test_route_one, field="getAssets")
+        router.add_route(fn=test_route_two, field="getPeople")
+        second_request = copy.deepcopy(example_request)
+        second_request["details"]["info"]["fieldName"] = "getPeople"
+        event = appsync.AppSyncEvent.create(raw=example_request, app={}, template={"context": "details"})
+        event2 = appsync.AppSyncEvent.create(raw=second_request, app={}, template={"context": "details"})
+        response = router.dispatch(event=event)
+        assert {"message": "ok"} == response
+        response = router.dispatch(event=event2)
+        assert {"message": "error"} == response
+
+    def test_dispatch_without_route(self, example_request):
+        router = appsync.AppSyncField()
+        with pytest.raises(ValueError) as e:
+            event = appsync.AppSyncEvent.create(raw=example_request, app={}, template={"context": "details"})
+            router.dispatch(event=event)
+            assert "No route configured" in str(e.value)

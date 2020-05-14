@@ -1,7 +1,7 @@
 import abc
 import enum
 
-from typing import Any, Dict, Mapping, Optional
+from typing import Any, Callable, Dict, Mapping, Optional
 
 import attr
 
@@ -114,6 +114,9 @@ class AppSyncEvent(interfaces.Event):
             )
 
         raw_context = parse(context_location).find(raw)
+        if not raw_context:
+            raise exceptions.ConfigError("Could not locate context at given path")
+
         raw_context = raw_context[0].value
 
         try:
@@ -125,3 +128,48 @@ class AppSyncEvent(interfaces.Event):
             raise exceptions.ConfigError(f"Could not load {excinfo} fields from context")
 
         return cls(raw=raw, app=app, arguments=arguments, identity=identity, info=info, request=request)
+
+
+@attr.s(kw_only=True)
+class AppSyncField(interfaces.Router):
+    """
+    Routes on a the value of the GraphQL ``field_name`` in the
+    given ``AppSyncEvent.info`` object.
+
+    :param routes: The routes mapping. Only set via ``add_route``
+    """
+
+    routes: Dict[str, Callable] = attr.ib(init=False, factory=dict)
+
+    def add_route(self, *, fn: Callable, field: str) -> None:
+        """
+        Adds the route with the given field.
+
+        :param fn: The callable to route to.
+        :type fn: callable
+        :param field: The key to associate the route with.
+        :type fn: str
+        """
+        self.routes[field] = fn
+
+    def get_route(self, *, event: AppSyncEvent) -> Callable:
+        """
+        Returns the matching route for the value of the ``field`` in the
+        given event.
+
+        :raises ValueError: Raised if no route is defined.
+        :rtype: callable
+        """
+        try:
+            return self.routes[event.info.field_name]
+        except KeyError:
+            raise ValueError(f"No route configured for given field ({event.info.field_name}).")
+
+    def dispatch(self, *, event: AppSyncEvent) -> Any:
+        """
+        Gets the configured route and invokes the callable.
+
+        :param event: The event to pass to the callable route.
+        """
+        route = self.get_route(event=event)
+        return route(event=event)
