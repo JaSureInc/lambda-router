@@ -104,7 +104,7 @@ class App:
         """
         Helper to create an event from the configured ``event_class``.
         """
-        return self.event_class(raw=raw_event)
+        return self.event_class.create(raw=raw_event, app=self)
 
     def __call__(self, raw_event: Mapping[str, Any], lambda_context: Any) -> Any:
         """
