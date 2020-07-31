@@ -1,7 +1,7 @@
 import logging
 import threading
 
-from typing import Any, Callable, List, Mapping, Optional
+from typing import Any, Callable, Dict, List, Mapping, Optional
 
 import attr
 
@@ -28,6 +28,7 @@ class App:
     name: str = attr.ib()
     config: Config = attr.ib(factory=Config)
     event_class: Event = attr.ib(default=LambdaEvent)
+    event_params: Optional[Dict[str, Any]] = attr.ib(default=None, repr=False)
     router: Router = attr.ib(factory=routers.SingleRoute)
     logger: logging.Logger = attr.ib(repr=False)
     local_context: threading.local = attr.ib(repr=False, init=False, factory=threading.local)
@@ -104,7 +105,13 @@ class App:
         """
         Helper to create an event from the configured ``event_class``.
         """
-        return self.event_class.create(raw=raw_event, app=self)
+        params = {
+            "raw": raw_event,
+            "app": self,
+        }
+        if self.event_params is not None:
+            params.update(self.event_params)
+        return self.event_class.create(**params)
 
     def __call__(self, raw_event: Mapping[str, Any], lambda_context: Any) -> Any:
         """
