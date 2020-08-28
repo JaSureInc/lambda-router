@@ -5,7 +5,7 @@ from typing import Any, Callable, Dict, List, Mapping, Optional
 
 import attr
 
-from . import routers
+from . import exceptions, routers
 from .config import Config
 from .events import LambdaEvent
 from .interfaces import Event, Router
@@ -129,7 +129,8 @@ class App:
             # without ever invoking the sys.excepthook handler, so this
             # mechanism is provided as a way to pass on those exceptions
             # without using sys.excepthook.
-            for fn in self.exception_handlers:
-                fn(self, event, e)
+            if not isinstance(e, exceptions.HandledError):
+                for fn in self.exception_handlers:
+                    fn(self, event, e)
             raise
         return response

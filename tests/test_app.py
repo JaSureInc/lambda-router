@@ -1,6 +1,6 @@
 import pytest  # noqa: F401
 
-from lambda_router.app import App, Config, routers
+from lambda_router.app import App, Config, exceptions, routers
 
 
 class TestApp:
@@ -82,6 +82,25 @@ class TestApp:
         with pytest.raises(ValueError):
             app({}, {})
             assert handled
+
+    def test_register_exception_handler_with_handled_error(self):
+        app = App(name="test_register_exception_handler_with_handled_error")
+        handled = False
+
+        @app.register_exception_handler
+        def handle_exceptions(app, event, e):
+            handled = True
+            print(f"handled: {handled}")
+
+        assert app.exception_handlers
+
+        @app.route()
+        def main_route(event):
+            raise exceptions.HandledError("Things went wrong")
+
+        with pytest.raises(exceptions.HandledError):
+            app({}, {})
+            assert not handled
 
     def test_event_field(self):
         app = App(name="test_default_config", router=routers.EventField(key="field"))
